@@ -58,7 +58,9 @@ public class MainActivity extends AppCompatActivity {
         URL githubSearchUrl = NetworkUtils.buildUrl(githubQuery);
         mUrlDisplayTextView.setText(githubSearchUrl.toString());
         // COMPLETE (4) Create a new GithubQueryTask and call its execute method, passing in the url to query
+//        new GithubQueryTask().execute(githubSearchUrl);
         new GithubQueryTask().execute(githubSearchUrl);
+
     }
 
     // COMPLETE (1) Create a class called GithubQueryTask that extends AsyncTask<URL, Void, String>

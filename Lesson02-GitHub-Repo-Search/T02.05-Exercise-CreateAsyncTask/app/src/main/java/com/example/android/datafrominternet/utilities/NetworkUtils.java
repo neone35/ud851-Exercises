@@ -24,6 +24,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
 /**
  * These utilities will be used to communicate with the network.
  */

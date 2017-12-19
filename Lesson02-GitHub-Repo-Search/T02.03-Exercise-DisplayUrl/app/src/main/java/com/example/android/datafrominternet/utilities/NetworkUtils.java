@@ -24,10 +24,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 /**
  * These utilities will be used to communicate with the network.
  */
+
 public class NetworkUtils {
+    OkHttpClient client = new OkHttpClient();
 
     final static String GITHUB_BASE_URL =
             "https://api.github.com/search/repositories";
@@ -40,6 +46,7 @@ public class NetworkUtils {
      */
     final static String PARAM_SORT = "sort";
     final static String sortBy = "stars";
+
 
     /**
      * Builds the URL used to query Github.
