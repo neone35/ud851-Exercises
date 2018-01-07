@@ -15,12 +15,14 @@
  */
 package com.example.android.asynctaskloader;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -161,11 +163,13 @@ public class MainActivity extends AppCompatActivity implements
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
+    @SuppressLint("StaticFieldLeak")
     @Override
     public Loader<String> onCreateLoader(int id, final Bundle args) {
         return new AsyncTaskLoader<String>(this) {
 
-            // TODO (1) Create a String member variable called mGithubJson that will store the raw JSON
+            // COMPLETE (1) Create a String member variable called mGithubJson that will store the raw JSON
+            String mGithubJson;
 
             @Override
             protected void onStartLoading() {
@@ -175,14 +179,14 @@ public class MainActivity extends AppCompatActivity implements
                     return;
                 }
 
-                /*
-                 * When we initially begin loading in the background, we want to display the
-                 * loading indicator to the user
-                 */
-                mLoadingIndicator.setVisibility(View.VISIBLE);
-
-                // TODO (2) If mGithubJson is not null, deliver that result. Otherwise, force a load
-                forceLoad();
+                // COMPLETE (2) If mGithubJson is not null, deliver that result. Otherwise, force a load
+                if (mGithubJson == null) {
+                    mLoadingIndicator.setVisibility(View.VISIBLE);
+                    forceLoad();
+                } else {
+                    deliverResult(mGithubJson);
+                    Log.d(getLocalClassName(), "onStartLoading: deliverResult");
+                }
             }
 
             @Override
@@ -199,16 +203,22 @@ public class MainActivity extends AppCompatActivity implements
                 /* Parse the URL from the passed in String and perform the search */
                 try {
                     URL githubUrl = new URL(searchQueryUrlString);
-                    String githubSearchResults = NetworkUtils.getResponseFromHttpUrl(githubUrl);
-                    return githubSearchResults;
+                    return NetworkUtils.getResponseFromHttpUrl(githubUrl);
                 } catch (IOException e) {
                     e.printStackTrace();
                     return null;
                 }
             }
 
-            // TODO (3) Override deliverResult and store the data in mGithubJson
-            // TODO (4) Call super.deliverResult after storing the data
+            // COMPLETE (3) Override deliverResult and store the data in mGithubJson
+
+            @Override
+            public void deliverResult(String data) {
+                mGithubJson = data;
+                super.deliverResult(data);
+            }
+
+            // COMPLETE (4) Call super.deliverResult after storing the data
         };
     }
 
