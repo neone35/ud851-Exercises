@@ -48,7 +48,7 @@ public class VisualizerActivity extends AppCompatActivity implements SharedPrefe
         setupPermissions();
     }
 
-    // TODO (2) Modify the setupSharedPreferences method and onSharedPreferencesChanged method to
+    // COMPLETE (2) Modify the setupSharedPreferences method and onSharedPreferencesChanged method to
     // properly update the minSizeScale, assuming a proper numerical value is saved in shared preferences
     private void setupSharedPreferences() {
         // Get all of the values from shared preferences to set it up
@@ -59,15 +59,24 @@ public class VisualizerActivity extends AppCompatActivity implements SharedPrefe
                 getResources().getBoolean(R.bool.pref_show_mid_range_default)));
         mVisualizerView.setShowTreble(sharedPreferences.getBoolean(getString(R.string.pref_show_treble_key),
                 getResources().getBoolean(R.bool.pref_show_treble_default)));
-        mVisualizerView.setMinSizeScale(1);
+        loadSizeFromPreferences(sharedPreferences);
         loadColorFromPreferences(sharedPreferences);
         // Register the listener
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
+    private void loadSizeFromPreferences(SharedPreferences sharedPreferences) {
+        String sizeKey = getString(R.string.pref_size_key);
+        String sizeDefaultValue = getString(R.string.pref_size_default);
+        String sizeValue = sharedPreferences.getString(sizeKey, sizeDefaultValue);
+        Float sizeValueFloat = Float.parseFloat(sizeValue);
+        mVisualizerView.setMinSizeScale(sizeValueFloat);
+    }
+
     private void loadColorFromPreferences(SharedPreferences sharedPreferences) {
-        mVisualizerView.setColor(sharedPreferences.getString(getString(R.string.pref_color_key),
-                getString(R.string.pref_color_red_value)));
+        String colorKey = getString(R.string.pref_color_key);
+        String colorDefaultValue = getString(R.string.pref_color_red_value);
+        mVisualizerView.setColor(sharedPreferences.getString(colorKey, colorDefaultValue));
     }
 
     // Updates the screen if the shared preferences change. This method is required when you make a
@@ -82,6 +91,8 @@ public class VisualizerActivity extends AppCompatActivity implements SharedPrefe
             mVisualizerView.setShowTreble(sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.pref_show_treble_default)));
         } else if (key.equals(getString(R.string.pref_color_key))) {
             loadColorFromPreferences(sharedPreferences);
+        } else if (key.equals(getString(R.string.pref_size_key))) {
+            loadSizeFromPreferences(sharedPreferences);
         }
     }
 

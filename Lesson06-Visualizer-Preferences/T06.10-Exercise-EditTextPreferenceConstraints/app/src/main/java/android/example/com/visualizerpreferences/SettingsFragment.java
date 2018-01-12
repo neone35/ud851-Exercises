@@ -25,11 +25,14 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
+import android.util.Log;
 import android.widget.Toast;
 
-// TODO (1) Implement OnPreferenceChangeListener
+import static android.content.ContentValues.TAG;
+
+// COMPLETE (1) Implement OnPreferenceChangeListener
 public class SettingsFragment extends PreferenceFragmentCompat implements
-        OnSharedPreferenceChangeListener {
+        SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceChangeListener {
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -51,7 +54,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 setPreferenceSummary(p, value);
             }
         }
-        // TODO (3) Add the OnPreferenceChangeListener specifically to the EditTextPreference
+        // COMPLETE (3) Add the OnPreferenceChangeListener specifically to the EditTextPreference
+        Preference editSizePreference = findPreference(getString(R.string.pref_size_key));
+        editSizePreference.setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -106,4 +111,28 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         getPreferenceScreen().getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        String editSizePreferenceKey = getString(R.string.pref_size_key);
+
+        if (preference.getKey().equals(editSizePreferenceKey)) {
+            Toast error = Toast.makeText(getContext(), "Input range between 0.1 and 3", Toast.LENGTH_SHORT);
+            String editSizeValue = (String) newValue;
+            try {
+                float editSizeFloat = Float.parseFloat(editSizeValue);
+                if (editSizeFloat > 0.1 && editSizeFloat < 3) {
+                    return true;
+                } else {
+                    error.show();
+                    return false;
+                }
+            } catch (Exception e) {
+                error.show();
+                return false;
+            }
+        }
+        return true;
+    }
 }
+
