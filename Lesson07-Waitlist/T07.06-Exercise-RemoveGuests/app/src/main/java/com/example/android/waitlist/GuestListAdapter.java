@@ -3,12 +3,18 @@ package com.example.android.waitlist;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.android.waitlist.data.WaitlistContract;
+
+import java.sql.Time;
+import java.util.Calendar;
+
+import static android.content.ContentValues.TAG;
 
 
 public class GuestListAdapter extends RecyclerView.Adapter<GuestListAdapter.GuestViewHolder> {
@@ -44,13 +50,15 @@ public class GuestListAdapter extends RecyclerView.Adapter<GuestListAdapter.Gues
         // Update the view holder with the information needed to display
         String name = mCursor.getString(mCursor.getColumnIndex(WaitlistContract.WaitlistEntry.COLUMN_GUEST_NAME));
         int partySize = mCursor.getInt(mCursor.getColumnIndex(WaitlistContract.WaitlistEntry.COLUMN_PARTY_SIZE));
-        // TODO (6) Retrieve the id from the cursor and
+        // COMPLETE (6) Retrieve the id from the cursor and
+        long id = mCursor.getLong((mCursor.getColumnIndex(WaitlistContract.WaitlistEntry._ID)));
 
         // Display the guest name
         holder.nameTextView.setText(name);
         // Display the party count
         holder.partySizeTextView.setText(String.valueOf(partySize));
-        // TODO (7) Set the tag of the itemview in the holder to the id
+        // COMPLETE (7) Set the tag of the itemview in the holder to the id
+        holder.itemView.setTag(id);
     }
 
 
