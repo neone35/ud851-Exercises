@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.widget.Toast;
 
 import static com.example.android.todolist.data.TaskContract.TaskEntry.TABLE_NAME;
 
@@ -41,6 +42,9 @@ public class TaskContentProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
     // Define a static buildUriMatcher method that associates URI's with their int match
+    // Member variable for a TaskDbHelper that's initialized in the onCreate() method
+    private TaskDbHelper mTaskDbHelper;
+
     /**
      Initialize a new matcher object without any matches,
      then use .addURI(String authority, String path, int match) to add matches
@@ -60,9 +64,6 @@ public class TaskContentProvider extends ContentProvider {
 
         return uriMatcher;
     }
-
-    // Member variable for a TaskDbHelper that's initialized in the onCreate() method
-    private TaskDbHelper mTaskDbHelper;
 
     /* onCreate() is where you should initialize anything you’ll need to setup
     your underlying data source.
@@ -139,6 +140,23 @@ public class TaskContentProvider extends ContentProvider {
                         null,
                         sortOrder);
                 break;
+            case TASK_WITH_ID:
+                // Get the id from the URI
+                String id = uri.getPathSegments().get(1);
+
+                // Selection is the _ID column = ?, and the Selection args = the row ID from the URI
+                String mSelection = "_id=?";
+                String[] mSelectionArgs = new String[]{id};
+
+                // Construct a query as you would normally, passing in the selection/args
+                retCursor = db.query(TABLE_NAME,
+                        projection,
+                        mSelection,
+                        mSelectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
             // Default exception
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -156,14 +174,35 @@ public class TaskContentProvider extends ContentProvider {
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
 
-        // TODO (1) Get access to the database and write URI matching code to recognize a single item
+        // COMPLETE (1) Get access to the database and write URI matching code to recognize a single item
 
-        // TODO (2) Write the code to delete a single row of data
+        // COMPLETE (2) Write the code to delete a single row of data
         // [Hint] Use selections to delete an item by its row ID
 
-        // TODO (3) Notify the resolver of a change and return the number of items deleted
+        // COMPLETE (3) Notify the resolver of a change and return the number of items deleted
+        // Get access to underlying database (read-only for query)
+        final SQLiteDatabase db = mTaskDbHelper.getReadableDatabase();
 
-        throw new UnsupportedOperationException("Not yet implemented");
+        // Write URI match code and set a variable to return a Cursor
+        int match = sUriMatcher.match(uri);
+        int deleteCount;
+
+        switch (match) {
+            case TASK_WITH_ID:
+                deleteCount = db.delete(TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                if (deleteCount <= 0) {
+                    throw new android.database.SQLException("Failed to delete task" + uri);
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        return deleteCount;
     }
 
 

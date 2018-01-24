@@ -16,9 +16,12 @@
 
 package com.example.android.todolist;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -40,11 +43,9 @@ public class MainActivity extends AppCompatActivity implements
     // Constants for logging and referring to a unique loader
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int TASK_LOADER_ID = 0;
-
+    RecyclerView mRecyclerView;
     // Member variables for the adapter and RecyclerView
     private CustomCursorAdapter mAdapter;
-    RecyclerView mRecyclerView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,12 +79,21 @@ public class MainActivity extends AppCompatActivity implements
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 // Here is where you'll implement swipe to delete
 
-                // TODO (1) Construct the URI for the item to delete
+                // COMPLETE (1) Construct the URI for the item to delete
                 //[Hint] Use getTag (from the adapter code) to get the id of the swiped item
 
-                // TODO (2) Delete a single row of data using a ContentResolver
+                // COMPLETE (2) Delete a single row of data using a ContentResolver
 
-                // TODO (3) Restart the loader to re-query for all tasks after a deletion
+                // COMPLETE (3) Restart the loader to re-query for all tasks after a deletion
+
+                int id = (int) viewHolder.itemView.getTag();
+                Uri tasksUri = TaskContract.TaskEntry.CONTENT_URI;
+                Uri itemUri = tasksUri.buildUpon().appendPath(id + "").build();
+
+                String stringId = Integer.toString(id);
+                getContentResolver().delete(itemUri, null, null);
+
+                getSupportLoaderManager().restartLoader(TASK_LOADER_ID, null, MainActivity.this);
                 
             }
         }).attachToRecyclerView(mRecyclerView);
@@ -210,4 +220,3 @@ public class MainActivity extends AppCompatActivity implements
         }
 
 }
-

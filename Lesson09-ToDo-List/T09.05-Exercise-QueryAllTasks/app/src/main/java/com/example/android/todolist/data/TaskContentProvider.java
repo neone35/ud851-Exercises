@@ -41,6 +41,9 @@ public class TaskContentProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
     // Define a static buildUriMatcher method that associates URI's with their int match
+    // Member variable for a TaskDbHelper that's initialized in the onCreate() method
+    private TaskDbHelper mTaskDbHelper;
+
     /**
      Initialize a new matcher object without any matches,
      then use .addURI(String authority, String path, int match) to add matches
@@ -60,9 +63,6 @@ public class TaskContentProvider extends ContentProvider {
 
         return uriMatcher;
     }
-
-    // Member variable for a TaskDbHelper that's initialized in the onCreate() method
-    private TaskDbHelper mTaskDbHelper;
 
     /* onCreate() is where you should initialize anything you’ll need to setup
     your underlying data source.
@@ -120,15 +120,30 @@ public class TaskContentProvider extends ContentProvider {
     public Cursor query(@NonNull Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
 
-        // TODO (1) Get access to underlying database (read-only for query)
+        // COMPLETE (1) Get access to underlying database (read-only for query)
+        final SQLiteDatabase db = mTaskDbHelper.getReadableDatabase();
+        int match = sUriMatcher.match(uri);
+        Cursor queryOutput;
 
-        // TODO (2) Write URI match code and set a variable to return a Cursor
+        switch (match) {
+            case TASKS:
+                queryOutput = db.query(TaskContract.TaskEntry.TABLE_NAME,
+                        null, null, null, null, null, null);
+                if (queryOutput == null) {
+                    throw new android.database.SQLException("Failed to retrieve data from " + uri);
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
 
-        // TODO (3) Query for the tasks directory and write a default case
+        // COMPLETE (2) Write URI match code and set a variable to return a Cursor
 
-        // TODO (4) Set a notification URI on the Cursor and return that Cursor
+        // COMPLETE (3) Query for the tasks directory and write a default case
 
-        throw new UnsupportedOperationException("Not yet implemented");
+        // COMPLETE (4) Set a notification URI on the Cursor and return that Cursor
+        queryOutput.setNotificationUri(getContext().getContentResolver(), uri);
+        return queryOutput;
     }
 
 
