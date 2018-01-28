@@ -16,6 +16,7 @@
         <item quantity="other">Hydrate while charging reminder sent %d times</item>
     </plurals>
 
+    <string name="main_notification_channel_name">Main channel</string>
 
     <!-- Strings for Notifications and Toasts -->
     <string name="water_chug_toast">GLUG GLUG GLUG</string>
