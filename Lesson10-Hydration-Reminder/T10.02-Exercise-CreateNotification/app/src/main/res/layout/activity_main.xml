@@ -30,7 +30,8 @@
             android:onClick="incrementWater"
             android:padding="8dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_local_drink_grey_120px" />
+            android:src="@drawable/ic_local_drink_grey_120px"
+            tools:ignore="MissingPrefix" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -71,7 +72,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/charging_plug_content_desc"
-            android:src="@drawable/ic_power_grey_80px" />
+            android:src="@drawable/ic_power_grey_80px"
+            tools:ignore="MissingPrefix" />
 
         <TextView
             android:id="@+id/tv_charging_reminder_count"
@@ -85,5 +87,10 @@
             android:text="@string/default_charge_notification_count" />
 
     </RelativeLayout>
-    <!-- TODO (14) Add a button for testing your notification with an onClick method called testNotification -->
+    <!-- COMPLETE (14) Add a button for testing your notification with an onClick method called testNotification -->
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="testNotification"
+        android:text="TEST NOTIFICATION" />
 </LinearLayout>
