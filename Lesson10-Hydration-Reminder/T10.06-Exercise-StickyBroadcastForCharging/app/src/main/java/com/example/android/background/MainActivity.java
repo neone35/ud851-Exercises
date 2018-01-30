@@ -20,6 +20,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -36,14 +38,12 @@ import com.example.android.background.utilities.PreferenceUtilities;
 public class MainActivity extends AppCompatActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
+    ChargingBroadcastReceiver mChargingReceiver;
+    IntentFilter mChargingIntentFilter;
     private TextView mWaterCountDisplay;
     private TextView mChargingCountDisplay;
     private ImageView mChargingImageView;
-
     private Toast mToast;
-
-    ChargingBroadcastReceiver mChargingReceiver;
-    IntentFilter mChargingIntentFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +51,9 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         /** Get the views **/
-        mWaterCountDisplay = (TextView) findViewById(R.id.tv_water_count);
-        mChargingCountDisplay = (TextView) findViewById(R.id.tv_charging_reminder_count);
-        mChargingImageView = (ImageView) findViewById(R.id.iv_power_increment);
+        mWaterCountDisplay = findViewById(R.id.tv_water_count);
+        mChargingCountDisplay = findViewById(R.id.tv_charging_reminder_count);
+        mChargingImageView = findViewById(R.id.iv_power_increment);
 
         /** Set the original values in the UI **/
         updateWaterCount();
@@ -83,22 +83,36 @@ public class MainActivity extends AppCompatActivity implements
         // In Android M and beyond you can simply get a reference to the BatteryManager and call
         // isCharging.
 
-        // TODO (1) Check if you are on Android M or later, if so...
-            // TODO (2) Get a BatteryManager instance using getSystemService()
-            // TODO (3) Call isCharging on the battery manager and pass the result on to your show
+        // COMPLETE (1) Check if you are on Android M or later, if so...
+        // COMPLETE (2) Get a BatteryManager instance using getSystemService()
+        // COMPLETE (3) Call isCharging on the battery manager and pass the result on to your show
             // charging method
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            BatteryManager batteryManager = (BatteryManager) getSystemService(BATTERY_SERVICE); //Object -> BatteryManager
+            if (batteryManager != null) {
+                showCharging(batteryManager.isCharging());
+            }
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED); // sticky intent, more info
+            registerReceiver(null, intentFilter); // getting sticky broadcast state
+            if (BatteryManager.EXTRA_STATUS.equals(BatteryManager.BATTERY_STATUS_CHARGING)) {
+                showCharging(true);
+            }
+        }
 
-        // TODO (4) If your user is not on M+, then...
-            // TODO (5) Create a new intent filter with the action ACTION_BATTERY_CHANGED. This is a
+
+        // COMPLETE (4) If your user is not on M+, then...
+        // COMPLETE (5) Create a new intent filter with the action ACTION_BATTERY_CHANGED. This is a
             // sticky broadcast that contains a lot of information about the battery state.
-            // TODO (6) Set a new Intent object equal to what is returned by registerReceiver, passing in null
+        // COMPLETE (6) Set a new Intent object equal to what is returned by registerReceiver, passing in null
             // for the receiver. Pass in your intent filter as well. Passing in null means that you're
             // getting the current state of a sticky broadcast - the intent returned will contain the
             // battery information you need.
-            // TODO (7) Get the integer extra BatteryManager.EXTRA_STATUS. Check if it matches
+        // COMPLETE (7) Get the integer extra BatteryManager.EXTRA_STATUS. Check if it matches
             // BatteryManager.BATTERY_STATUS_CHARGING or BatteryManager.BATTERY_STATUS_FULL. This means
             // the battery is currently charging.
-            // TODO (8) Update the UI using your showCharging method
+        // COMPLETE (8) Update the UI using your showCharging method
 
         registerReceiver(mChargingReceiver, mChargingIntentFilter);
     }
